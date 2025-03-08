@@ -148,6 +148,9 @@ NewsCrawler is a comprehensive web scraping and article retrieval system designe
   - Docker: https://www.docker.com/
   - Docker Compose: https://docs.docker.com/compose/
 
+  **LLM**:
+  - GroqAI: https://console.groq.com/docs/libraries
+
 ### Data Sources
 - url.csv file containing target URLs
 - Additional news sources from news-sources.txt

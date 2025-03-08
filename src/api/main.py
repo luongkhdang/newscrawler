@@ -6,6 +6,7 @@ import os
 from typing import List, Optional
 
 from src.api.routers import articles, sources, crawl, search, health
+from src.api.routers import llm  # Import the new LLM router
 from src.database.session import get_db, init_db
 
 # Configure logging
@@ -37,12 +38,19 @@ app.include_router(articles.router, prefix="/articles", tags=["articles"])
 app.include_router(sources.router, prefix="/sources", tags=["sources"])
 app.include_router(crawl.router, prefix="/crawl", tags=["crawl"])
 app.include_router(search.router, prefix="/search", tags=["search"])
+app.include_router(llm.router)  # Include the new LLM router
 
 # Startup event
 @app.on_event("startup")
 async def startup_event():
     logger.info("Starting up the API")
     init_db()
+    
+    # Log Groq API key status
+    if os.getenv("GROQ_API_KEY"):
+        logger.info("Groq API key found in environment variables")
+    else:
+        logger.warning("Groq API key not found in environment variables. LLM features will not work.")
 
 # Shutdown event
 @app.on_event("shutdown")
