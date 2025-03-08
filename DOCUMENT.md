@@ -44,6 +44,7 @@ NewsCrawler is a comprehensive web scraping and article retrieval system designe
 - Real-time news alerting or notification systems
 - Sentiment analysis or advanced NLP processing of articles (may be added in future iterations)
 - User authentication and authorization systems (unless required for API access)
+- **Image scraping and storage**: The system should NEVER scrape, process, or store images from articles to optimize performance, reduce bandwidth usage, and avoid potential copyright issues
 
 ## Key Components
 
@@ -52,18 +53,20 @@ NewsCrawler is a comprehensive web scraping and article retrieval system designe
 - URL management system to track crawled URLs and avoid duplicates
 - Rate limiting and politeness protocols to avoid overloading news sites
 - Error handling and retry mechanisms for failed requests
+- Configuration to explicitly disable image extraction in all scraper implementations
 
 ### 2. Content Processing Module
 - Article extraction and cleaning
 - Metadata extraction (publication date, author, title, etc.)
 - Content categorization and tagging
-- Image and media handling
+- **No image processing**: All scrapers must be configured to skip image extraction and processing
 
 ### 3. Database Module
 - PostgreSQL database with optimized schema for article storage
 - Indexing for efficient retrieval
 - Version control for updated articles
 - Backup and recovery mechanisms
+- Schema design that excludes image storage fields
 
 ### 4. API Module
 - FastAPI implementation for RESTful endpoints
@@ -78,38 +81,39 @@ NewsCrawler is a comprehensive web scraping and article retrieval system designe
 - Logging and monitoring setup
 
 ## Implementation Strategy
-1. **Phase 1: Research and Design**
-   - Evaluate and test different web scraping libraries for various news sources
-   - Design database schema and API endpoints
-   - Create system architecture documentation
 
-2. **Phase 2: Core Implementation**
-   - Develop the data collection module with support for multiple scraping strategies
-   - Implement the database module and schema
-   - Create basic content processing functionality
+### Phase 1: Research and Design (2 weeks)
+- Evaluate and test different web scraping libraries for various news sources
+- Design database schema and API endpoints
+- Create system architecture documentation
 
-3. **Phase 3: API and Integration**
-   - Develop the FastAPI endpoints
-   - Integrate with the database module
-   - Implement advanced content processing features
+### Phase 2: Core Implementation (3 weeks)
+- Develop the data collection module with support for multiple scraping strategies
+- Implement the database module and schema
+- Create basic content processing functionality
 
-4. **Phase 4: Containerization and Testing**
-   - Create Docker configurations
-   - Implement comprehensive testing
-   - Optimize performance and resource usage
+### Phase 3: API and Integration (2 weeks)
+- Develop the FastAPI endpoints
+- Integrate with the database module
+- Implement advanced content processing features
 
-5. **Phase 5: Documentation and Deployment**
-   - Complete system documentation
-   - Prepare deployment guides
-   - Finalize monitoring and maintenance procedures
+### Phase 4: Containerization and Testing (2 weeks)
+- Create Docker configurations
+- Implement comprehensive testing
+- Optimize performance and resource usage
+
+### Phase 5: Documentation and Deployment (1 week)
+- Complete system documentation
+- Prepare deployment guides
+- Finalize monitoring and maintenance procedures
 
 ## Timeline
-- **Phase 1**: 2 weeks
-- **Phase 2**: 3 weeks
-- **Phase 3**: 2 weeks
-- **Phase 4**: 2 weeks
-- **Phase 5**: 1 week
-- **Total**: 10 weeks
+- **Weeks 1-2**: Research and Design
+- **Weeks 3-5**: Core Implementation
+- **Weeks 6-7**: API and Integration
+- **Weeks 8-9**: Containerization and Testing
+- **Week 10**: Documentation and Deployment
+- **Total Project Duration**: 10 weeks
 
 ## Success Metrics
 - Successfully crawl and process at least 95% of provided URLs
@@ -120,10 +124,39 @@ NewsCrawler is a comprehensive web scraping and article retrieval system designe
 - Docker containers using less than 2GB RAM in total
 - Complete documentation coverage for all system components
 
-## Virtual Environment Setup
+## Resources
+
+### Libraries and Tools
+- **Web Scraping**:
+  - Newspaper4k: https://newspaper4k.readthedocs.io/
+  - feedparser: https://feedparser.readthedocs.io/
+  - gnews: https://pypi.org/project/gnews/
+  - beautifulsoup4: https://pypi.org/project/beautifulsoup4/
+  - Puppeteer: https://pptr.dev/guides/
+
+- **Backend and Database**:
+  - FastAPI: https://fastapi.tiangolo.com/
+  - PostgreSQL: https://www.postgresql.org/
+  - SQLAlchemy: https://www.sqlalchemy.org/
+  - pgvector: https://github.com/pgvector/pgvector
+
+- **Vector Processing**:
+  - LangChain: https://python.langchain.com/
+  - HuggingFace Embeddings: https://huggingface.co/models
+
+- **Containerization**:
+  - Docker: https://www.docker.com/
+  - Docker Compose: https://docs.docker.com/compose/
+
+### Data Sources
+- url.csv file containing target URLs
+- Additional news sources from news-sources.txt
+
+### Development Guidelines
+
+#### Virtual Environment Setup
 All Python development for this project MUST use virtual environments (venv) instead of global environments. This ensures dependency isolation, reproducibility, and prevents conflicts between packages.
 
-### Creating and Using Virtual Environments
 ```bash
 # Create a virtual environment in the project directory
 python -m venv venv
@@ -141,25 +174,10 @@ pip install -r requirements.txt
 deactivate
 ```
 
-### Virtual Environment Best Practices
+#### Virtual Environment Best Practices
 1. Never install packages globally for this project
 2. Always activate the virtual environment before working on the project
 3. Keep requirements.txt updated with all dependencies
 4. Include venv/ in .gitignore to avoid committing the virtual environment
 5. Document any new dependencies added to the project
 
-## Resources
-- **Libraries and Tools**:
-  - Newspaper4k: https://newspaper4k.readthedocs.io/
-  - feedparser: https://feedparser.readthedocs.io/
-  - gnews: https://pypi.org/project/gnews/
-  - beautifulsoup4: https://pypi.org/project/beautifulsoup4/
-  - Puppeteer: https://pptr.dev/guides/
-  - LangChain
-  - Docker
-  - FastAPI
-  - PostgreSQL
-
-- **Data Sources**:
-  - url.csv file containing target URLs
-  - Additional news sources from news-sources.md 

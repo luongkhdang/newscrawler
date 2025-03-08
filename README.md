@@ -24,7 +24,41 @@ NewsCrawler is designed to:
 - **API Access**: Provides RESTful API endpoints for data retrieval and management
 - **Containerization**: Runs in Docker containers for easy deployment and scaling
 
-## Project Structure
+## Docker, FastAPI, LangChain, and PostgreSQL Integration
+
+This project now includes integration with Docker, FastAPI, LangChain, and PostgreSQL for a complete news crawling and retrieval system.
+
+### Prerequisites
+
+- Docker and Docker Compose installed
+- Python 3.11 or higher (for local development)
+- Git
+
+### Quick Start
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd newscrawler
+   ```
+
+2. Create a `.env` file from the example:
+   ```bash
+   cp .env.example .env
+   ```
+   
+3. Edit the `.env` file to configure your environment variables.
+
+4. Start the Docker containers:
+   ```bash
+   docker-compose up -d
+   ```
+
+5. Access the API documentation:
+   - Swagger UI: http://localhost:8000/docs
+   - ReDoc: http://localhost:8000/redoc
+
+### Project Structure
 
 ```
 newscrawler/
@@ -46,6 +80,97 @@ newscrawler/
 ├── setup.py                    # Package setup
 └── README.md                   # This file
 ```
+
+### Services
+
+The application consists of the following services:
+
+1. **PostgreSQL Database**
+   - Stores articles, sources, and crawl logs
+   - Includes pgvector extension for vector embeddings
+
+2. **FastAPI Application**
+   - RESTful API for accessing and managing data
+   - Endpoints for articles, sources, crawling, and search
+
+3. **Crawler Service**
+   - Scheduled crawling of news sources
+   - Article extraction and processing
+
+4. **Vector Processing Service**
+   - Generates vector embeddings for articles using LangChain
+   - Enables semantic search capabilities
+
+### API Endpoints
+
+- `/articles`: CRUD operations for articles
+- `/sources`: CRUD operations for news sources
+- `/crawl`: Endpoints to trigger and monitor crawling jobs
+- `/search/text`: Text-based search
+- `/search/semantic`: Semantic search using vector embeddings
+- `/health`: Health check endpoint
+
+### Development
+
+For local development without Docker:
+
+1. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Set up the database:
+   ```bash
+   # Install PostgreSQL and pgvector extension
+   # Create the database and user
+   ```
+
+4. Run the API:
+   ```bash
+   uvicorn src.api.main:app --reload
+   ```
+
+### Testing
+
+Run tests with pytest:
+
+```bash
+pytest
+```
+
+### Deployment
+
+For production deployment:
+
+1. Update the `.env` file with production settings
+2. Use a proper secret for JWT_SECRET and API_KEY
+3. Configure proper CORS settings in `src/api/main.py`
+4. Deploy using Docker Compose:
+   ```bash
+   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+   ```
+
+### LangChain Integration
+
+This project uses LangChain for:
+
+1. **Document Processing**
+   - Text splitting and chunking
+   - Metadata extraction
+
+2. **Vector Embeddings**
+   - Generate embeddings for articles
+   - Support for different embedding models (HuggingFace, OpenAI)
+
+3. **Semantic Search**
+   - Vector-based similarity search
+   - Hybrid search combining keyword and semantic approaches
 
 ## Getting Started
 

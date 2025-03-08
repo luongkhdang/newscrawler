@@ -1,8 +1,11 @@
 """
-Newspaper4k-based scraper for NewsCrawler.
+Newspaper4k-based scraper package.
 """
 
-from .scraper import NewspaperScraper
+from .newspaper_scraper import NewspaperScraper, NewspaperScraperConfig
+
+__all__ = ['NewspaperScraper', 'NewspaperScraperConfig']
+
 from .models import Article, ArticleMetadata, ArticleImage, ScraperConfig
 from .exceptions import (
     ScraperError,

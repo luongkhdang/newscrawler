@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database with pgvector extension
+  postgres:
+    image: ankane/pgvector:latest
+    container_name: newscrawler-postgres
+    environment:
+      POSTGRES_USER: newscrawler
+      POSTGRES_PASSWORD: newscrawler_password
+      POSTGRES_DB: newscrawler
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U newscrawler"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Application
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: newscrawler-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://newscrawler:newscrawler_password@postgres:5432/newscrawler
+      ENVIRONMENT: development
+      LOG_LEVEL: debug
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Crawler Service
+  crawler:
+    build:
+      context: .
+      dockerfile: Dockerfile.crawler
+    container_name: newscrawler-crawler
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://newscrawler:newscrawler_password@postgres:5432/newscrawler
+      ENVIRONMENT: development
+      LOG_LEVEL: debug
+    volumes:
+      - .:/app
+    command: python -m src.crawler.scheduler
+
+  # Vector Processing Service (for LangChain embeddings)
+  vector_processor:
+    build:
+      context: .
+      dockerfile: Dockerfile.vector
+    container_name: newscrawler-vector
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://newscrawler:newscrawler_password@postgres:5432/newscrawler
+      ENVIRONMENT: development
+      LOG_LEVEL: debug
+    volumes:
+      - .:/app
+    command: python -m src.vector.processor
+
+volumes:
+  postgres_data: 

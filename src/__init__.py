@@ -1,5 +1,5 @@
 """
-NewsCrawler - A comprehensive web scraping and article retrieval system.
+NewsCrawler package.
 """
 
 __version__ = "0.1.0" 

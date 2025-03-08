@@ -1,9 +1,0 @@
-https://markettimes.vn/
-https://www.intelligenceonline.com/
-https://vietnamnet.vn/kinh-doanh
-https://vietnamexport.com/
-https://www.businessinsider.com/
-https://www.wsj.com/
-https://www.nytimes.com/
-https://www.theguardian.com/us
-https://www.bloomberg.com/

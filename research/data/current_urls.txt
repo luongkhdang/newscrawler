@@ -1,0 +1,36 @@
+# Current URLs for Newspaper4k research
+# Format: one URL per line, lines starting with # are ignored
+
+# Major news sites
+https://www.bbc.com/news
+https://www.cnn.com
+https://www.nytimes.com
+https://www.washingtonpost.com
+https://www.theguardian.com
+
+# Technology news
+https://techcrunch.com
+https://www.wired.com
+https://arstechnica.com
+
+# Business news
+https://www.bloomberg.com
+https://www.cnbc.com
+https://www.ft.com
+
+# Science news
+https://www.scientificamerican.com
+https://www.nature.com
+https://www.sciencedaily.com
+
+# Sports news
+https://www.espn.com
+https://www.skysports.com
+
+# Entertainment news
+https://variety.com
+https://www.hollywoodreporter.com
+
+# Blogs and alternative formats
+https://krebsonsecurity.com
+https://www.smashingmagazine.com 

@@ -207,3 +207,133 @@ Implementation steps:
 - **URL (Uniform Resource Locator)**: A reference to a web resource that specifies its location on a computer network.
 - **Web Scraping**: The process of extracting data from websites.
 - **XML (eXtensible Markup Language)**: A markup language that defines a set of rules for encoding documents in a format that is both human-readable and machine-readable. 
+
+
+### 1. PostgreSQL Database Setup
+
+#### Database Schema Design
+- **Articles Table**:
+  - `id`: Primary key (UUID)
+  - `url`: URL of the article (unique)
+  - `title`: Article title
+  - `content`: Full article text
+  - `summary`: Auto-generated summary
+  - `published_date`: Publication date
+  - `author`: Author name(s)
+  - `source_domain`: Domain of the source
+  - `category`: Article category/section
+  - `keywords`: Array of keywords
+  - `created_at`: Timestamp of when the record was created
+  - `updated_at`: Timestamp of when the record was last updated
+  - `vector_embedding`: Vector representation of the article (for semantic search)
+
+- **Sources Table**:
+  - `id`: Primary key (UUID)
+  - `domain`: Domain name (unique)
+  - `name`: Source name
+  - `base_url`: Base URL
+  - `scraper_type`: Type of scraper to use
+  - `active`: Boolean indicating if the source is active
+  - `last_crawled`: Timestamp of last crawl
+  - `crawl_frequency`: How often to crawl (in hours)
+
+- **Crawl_Logs Table**:
+  - `id`: Primary key (UUID)
+  - `source_id`: Foreign key to Sources table
+  - `start_time`: Start timestamp
+  - `end_time`: End timestamp
+  - `articles_found`: Number of articles found
+  - `articles_added`: Number of new articles added
+  - `articles_updated`: Number of articles updated
+  - `status`: Success/failure status
+  - `error_message`: Error message if failed
+
+#### Database Migration Scripts
+- Create SQL migration scripts for initial schema creation
+- Implement SQLAlchemy models matching the database schema
+- Create database upgrade/downgrade scripts for future schema changes
+
+### 2. FastAPI Implementation
+
+#### API Structure
+- **Core API Module**:
+  - Application factory pattern
+  - Configuration management
+  - Dependency injection setup
+  - Authentication middleware (JWT-based)
+  - CORS configuration
+  - Rate limiting
+
+- **Endpoints**:
+  - `/articles`: CRUD operations for articles
+  - `/sources`: CRUD operations for news sources
+  - `/crawl`: Endpoints to trigger and monitor crawling jobs
+  - `/search`: Text and semantic search capabilities
+  - `/stats`: System statistics and metrics
+  - `/health`: Health check endpoint
+
+- **Documentation**:
+  - Automatic Swagger/OpenAPI documentation
+  - Custom documentation for complex endpoints
+  - Authentication documentation
+
+#### API Features
+- Pagination for list endpoints
+- Filtering and sorting capabilities
+- Full-text search integration
+- Vector search for semantic queries (using LangChain)
+- Background task handling for long-running operations
+- WebSocket support for real-time updates
+
+### 3. LangChain Integration
+
+#### Vector Database Setup
+- Configure PostgreSQL with pgvector extension for vector storage
+- Implement vector embedding generation using LangChain's embedding models
+- Create indexing system for efficient vector search
+
+#### RAG Components
+- **Document Loaders**:
+  - Implement custom document loaders for different article formats
+  - Configure metadata extraction during loading
+
+- **Text Splitters**:
+  - Implement semantic text splitting for articles
+  - Configure chunk size and overlap for optimal retrieval
+
+- **Retrievers**:
+  - Implement vector-based retrieval using LangChain
+  - Create hybrid retrieval combining keyword and semantic search
+  - Implement relevance filtering and re-ranking
+
+- **LLM Integration**:
+  - Configure LangChain to use specified LLM models
+  - Implement prompt templates for different query types
+  - Create output parsers for structured responses
+
+#### LangChain Agents
+- Design specialized agents for different types of news analysis
+- Implement tool integration for external data enrichment
+- Create agent orchestration for complex queries
+
+### 4. Docker Containerization
+
+#### Container Architecture
+- **Database Container**:
+  - PostgreSQL with pgvector extension
+  - Persistent volume configuration
+  - Optimized PostgreSQL configuration
+
+- **API Container**:
+  - FastAPI application
+  - Gunicorn/Uvicorn for production serving
+  - Health check configuration
+
+- **Crawler Container**:
+  - Scheduled crawling jobs
+  - Configurable parallelism
+  - Resource limitation
+
+- **Vector Processing Container**:
+  - Batch processing for vector embeddings
+  - GPU support configuration (optional)

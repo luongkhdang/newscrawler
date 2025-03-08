@@ -1,0 +1,37 @@
+# Test URLs for Newspaper4k research
+# Format: one URL per line, lines starting with # are ignored
+
+# Major news sites
+https://www.bbc.com/news/world-us-canada-68465050
+https://www.cnn.com/2023/03/08/tech/meta-facebook-layoffs/index.html
+https://www.nytimes.com/2023/03/08/business/economy/federal-reserve-powell-interest-rates.html
+https://www.washingtonpost.com/technology/2023/03/08/ai-voice-deep-fakes/
+https://www.theguardian.com/environment/2023/mar/08/revealed-1000-super-emitting-methane-leaks-risk-triggering-climate-tipping-points
+
+# Technology news
+https://techcrunch.com/2023/03/08/meta-is-building-a-decentralized-text-based-app-codenamed-p92-to-rival-twitter/
+https://www.wired.com/story/ai-voice-deep-fakes/
+https://arstechnica.com/gadgets/2023/03/report-apple-is-working-on-airpods-that-double-as-hearing-aids/
+
+# Business news
+https://www.bloomberg.com/news/articles/2023-03-08/silicon-valley-bank-shares-plunge-as-startup-clients-yank-deposits
+https://www.cnbc.com/2023/03/08/adidas-warns-of-first-annual-loss-in-three-decades-and-cuts-dividend-after-ye-split.html
+https://www.ft.com/content/3b095f4a-b632-4d02-8e71-2a5b9132d7a3
+
+# Science news
+https://www.scientificamerican.com/article/how-to-find-newly-discovered-exoplanet-system-lhs-1140/
+https://www.nature.com/articles/d41586-023-00641-w
+https://www.sciencedaily.com/releases/2023/03/230308131214.htm
+
+# Sports news
+https://www.espn.com/nfl/story/_/id/35800935/source-giants-trade-wr-kenny-golladay-restructured-deal
+https://www.skysports.com/football/news/11095/12830444/champions-league-chelsea-beat-borussia-dortmund-to-reach-quarter-finals-as-graham-potter-eases-pressure
+
+# Entertainment news
+https://variety.com/2023/film/news/the-flash-movie-screening-reaction-dc-best-superhero-movie-1235547919/
+https://www.hollywoodreporter.com/movies/movie-news/scream-6-review-1235342309/
+
+# Blogs and alternative formats
+https://krebsonsecurity.com/2023/03/why-you-should-opt-out-of-sharing-data-with-your-mobile-provider/
+https://avc.com/2023/03/the-ai-hype-cycle/
+https://www.smashingmagazine.com/2023/03/everything-developers-need-know-figma/ 
