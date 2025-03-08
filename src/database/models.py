@@ -2,8 +2,9 @@ import uuid
 from datetime import datetime
 from typing import List, Optional
 from sqlalchemy import Column, String, Text, Boolean, Integer, DateTime, ForeignKey, ARRAY
-from sqlalchemy.dialects.postgresql import UUID, VECTOR
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+from pgvector.sqlalchemy import Vector
 
 from src.database.session import Base
 
@@ -21,7 +22,7 @@ class Article(Base):
     source_domain = Column(Text, nullable=False)
     category = Column(Text, nullable=True)
     keywords = Column(ARRAY(Text), nullable=True)
-    vector_embedding = Column(VECTOR(1536), nullable=True)
+    vector_embedding = Column(Vector(1536), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

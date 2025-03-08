@@ -5,8 +5,11 @@ LLM-related API endpoints using Groq.
 from fastapi import APIRouter, Depends, HTTPException, Body
 from pydantic import BaseModel, Field
 from typing import Dict, Any, List, Optional
+from sqlalchemy.orm import Session
 
 from src.utils.groq_client import get_groq_client, GroqClient, DEFAULT_MODEL, LARGER_MODEL, MIXTRAL_MODEL
+from src.llm.rag import RAGSystem
+from src.database.session import get_db
 
 router = APIRouter(prefix="/llm", tags=["llm"])
 
@@ -60,6 +63,20 @@ class EntityExtractionResponse(BaseModel):
 class AvailableModelsResponse(BaseModel):
     """Response model for available models."""
     models: List[Dict[str, Any]] = Field(..., description="List of available models")
+
+
+class QuestionAnsweringRequest(BaseModel):
+    """Request model for question answering using RAG."""
+    question: str = Field(..., description="The question to answer")
+    model: str = Field(LARGER_MODEL, description="The model to use for generation")
+    max_tokens: int = Field(1024, description="Maximum number of tokens to generate")
+    temperature: float = Field(0.7, description="Temperature for generation")
+
+
+class QuestionAnsweringResponse(BaseModel):
+    """Response model for question answering using RAG."""
+    answer: str = Field(..., description="The answer to the question")
+    sources: List[Dict[str, Any]] = Field(..., description="Sources used to generate the answer")
 
 
 @router.get("/models", response_model=AvailableModelsResponse)
@@ -149,4 +166,24 @@ async def extract_entities(request: EntityExtractionRequest):
         
         return {"entities": result["entities"]}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error extracting entities: {str(e)}") 
+        raise HTTPException(status_code=500, detail=f"Error extracting entities: {str(e)}")
+
+
+@router.post("/ask", response_model=QuestionAnsweringResponse)
+async def answer_question(
+    request: QuestionAnsweringRequest,
+    db: Session = Depends(get_db)
+):
+    """Answer a question using RAG."""
+    try:
+        rag_system = RAGSystem(db_session=db)
+        result = rag_system.answer_question(
+            query=request.question,
+            model=request.model,
+            max_tokens=request.max_tokens,
+            temperature=request.temperature
+        )
+        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error answering question: {str(e)}") 

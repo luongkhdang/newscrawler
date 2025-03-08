@@ -25,6 +25,41 @@ Key components:
 - **Context Integration**: Incorporating retrieved information into prompt context
 - **Knowledge Base Management**: Organizing and updating the external knowledge source
 
+### Vector Embeddings and Retrieval
+
+Vector embeddings convert text into numerical representations that capture semantic meaning, enabling similarity search and retrieval. In the context of NewsCrawler, vector embeddings are used to implement semantic search and retrieval-augmented generation.
+
+Key components:
+- **Embedding Models**: Neural networks that convert text to vector representations
+- **Vector Databases**: Specialized databases for storing and querying vector embeddings
+- **Similarity Metrics**: Methods for measuring distance or similarity between vectors
+- **Chunking Strategies**: Techniques for breaking text into manageable pieces for embedding
+
+#### Embedding Models
+
+Based on our research, the following embedding models are recommended for NewsCrawler:
+
+- **BAAI/bge-small-en-v1.5**: Best overall performance with 384 dimensions, offering optimal balance of quality and efficiency
+- **sentence-transformers/all-MiniLM-L6-v2**: Fastest embedding generation (0.013s per document) while maintaining good quality
+- **BAAI/bge-base-en-v1.5**: Higher quality but with larger dimensionality (768) and storage requirements
+
+#### Chunking Strategies
+
+For optimal retrieval performance, the following chunking strategies are recommended:
+
+- **Primary Strategy**: RecursiveCharacterTextSplitter with 500 character chunks and 100 character overlap
+- **Storage-Optimized**: RecursiveCharacterTextSplitter with 1000 character chunks and 200 character overlap
+- **Performance-Optimized**: Character-based splitting with 1000 characters and no overlap
+
+#### Vector Database (pgvector)
+
+PostgreSQL with pgvector extension provides efficient vector storage and retrieval:
+
+- **Index Types**: HNSW indexes outperform IVFFlat for large datasets
+- **Distance Metrics**: Cosine similarity performs best for semantic search
+- **Hybrid Search**: Combining vector similarity with keyword search improves results
+- **Performance**: HNSW indexes provide 3-5x faster queries than IVFFlat
+
 ### Database Management
 Database management involves designing, implementing, and maintaining a database system to store and retrieve data efficiently. For NewsCrawler, this includes creating a schema for news articles, optimizing queries, and ensuring data integrity.
 
@@ -64,6 +99,9 @@ Key components:
 - **Named Entity Recognition (NER)**: Identifying and classifying named entities in text.
 - **Text Cleaning**: Removing unwanted characters, formatting, and noise from text data.
 - **Metadata**: Data that provides information about other data, such as publication date or author of an article.
+- **Vector Embedding**: Numerical representation of text that captures semantic meaning.
+- **Chunking**: Breaking text into smaller, manageable pieces for processing and embedding.
+- **Cosine Similarity**: A measure of similarity between two vectors based on the cosine of the angle between them.
 
 ### Database
 - **SQL**: Structured Query Language, used for managing relational databases.
@@ -73,6 +111,10 @@ Key components:
 - **Transaction**: A sequence of database operations that are treated as a single unit.
 - **ACID**: Atomicity, Consistency, Isolation, Durability - properties that guarantee database transactions are processed reliably.
 - **ORM**: Object-Relational Mapping, a technique for converting data between incompatible type systems in object-oriented programming languages.
+- **pgvector**: PostgreSQL extension for storing and querying vector embeddings.
+- **HNSW Index**: Hierarchical Navigable Small World index, an efficient algorithm for approximate nearest neighbor search.
+- **IVFFlat Index**: Inverted File Flat index, a simpler algorithm for approximate nearest neighbor search.
+- **Hybrid Search**: Combining vector similarity search with traditional keyword-based search.
 
 ### API Development
 - **REST**: Representational State Transfer, an architectural style for designing networked applications.
@@ -145,10 +187,31 @@ Key components:
   - Best for: Storing structured data with complex relationships
   - Documentation: https://www.postgresql.org/docs/
 
+- **pgvector**: PostgreSQL extension for vector similarity search.
+  - Key features: Vector storage, similarity search, multiple index types
+  - Best for: Efficient storage and retrieval of vector embeddings
+  - Documentation: https://github.com/pgvector/pgvector
+
 - **Docker**: Platform for developing, shipping, and running applications in containers.
   - Key features: Containerization, isolation, portability
   - Best for: Consistent deployment across environments
   - Documentation: https://docs.docker.com/
+
+### LLM and Embedding Technologies
+- **GroqAI**: High-performance LLM API service.
+  - Key features: Low latency, multiple model options (Llama 3 8B, Llama 3 70B, Mixtral 8x7B)
+  - Best for: Production RAG applications requiring fast response times
+  - Documentation: https://console.groq.com/docs/libraries
+
+- **BAAI/bge-small-en-v1.5**: Embedding model from Beijing Academy of Artificial Intelligence.
+  - Key features: 384 dimensions, excellent semantic representation, good performance
+  - Best for: General-purpose text embeddings with balanced quality and efficiency
+  - Documentation: https://huggingface.co/BAAI/bge-small-en-v1.5
+
+- **sentence-transformers**: Framework for state-of-the-art sentence embeddings.
+  - Key features: Multiple pre-trained models, easy integration, multilingual support
+  - Best for: Generating high-quality text embeddings
+  - Documentation: https://www.sbert.net/
 
 ## Methodological Approaches
 
@@ -182,6 +245,26 @@ Implementation steps:
 4. Merge or update existing entries when appropriate
 5. Maintain version history for significant updates
 
+### Optimal Chunking Strategy
+A methodological approach to breaking down articles into smaller pieces for embedding and retrieval. This ensures that the most relevant content is retrieved for a given query.
+
+Implementation steps:
+1. Clean and normalize the article text
+2. Apply RecursiveCharacterTextSplitter with 500 character chunks and 100 character overlap
+3. Preserve metadata with each chunk
+4. Generate embeddings for each chunk
+5. Store chunks and embeddings with references to the original article
+
+### Hybrid Search Implementation
+A methodological approach that combines vector similarity search with traditional keyword-based search for improved retrieval quality.
+
+Implementation steps:
+1. Perform vector similarity search to find semantically similar content
+2. Perform keyword-based search to find exact matches
+3. Combine results using a weighted scoring approach
+4. Rank and return the most relevant results
+5. Continuously evaluate and adjust weights based on performance
+
 ## Glossary of Terms
 
 - **API (Application Programming Interface)**: A set of rules that allows different software applications to communicate with each other.
@@ -191,6 +274,8 @@ Implementation steps:
 - **Docker**: A platform for developing, shipping, and running applications in containers.
 - **DOM (Document Object Model)**: A programming interface for HTML and XML documents.
 - **FastAPI**: A modern, fast web framework for building APIs with Python.
+- **GroqAI**: A high-performance LLM API service optimized for low latency.
+- **HNSW (Hierarchical Navigable Small World)**: An efficient algorithm for approximate nearest neighbor search.
 - **HTML (HyperText Markup Language)**: The standard markup language for documents designed to be displayed in a web browser.
 - **HTTP (HyperText Transfer Protocol)**: An application protocol for distributed, collaborative, hypermedia information systems.
 - **JSON (JavaScript Object Notation)**: A lightweight data interchange format.
@@ -198,6 +283,7 @@ Implementation steps:
 - **LLM (Large Language Model)**: A type of AI model trained on vast amounts of text data to generate human-like text.
 - **NLP (Natural Language Processing)**: A field of AI focused on the interaction between computers and human language.
 - **ORM (Object-Relational Mapping)**: A technique for converting data between incompatible type systems in object-oriented programming languages.
+- **pgvector**: A PostgreSQL extension for storing and querying vector embeddings.
 - **PostgreSQL**: An open-source relational database system.
 - **Puppeteer**: A Node.js library for controlling headless Chrome or Chromium.
 - **RAG (Retrieval-Augmented Generation)**: An AI framework that enhances language models by providing them with external knowledge.
@@ -205,6 +291,7 @@ Implementation steps:
 - **RSS (Really Simple Syndication)**: A web feed that allows users and applications to access updates to websites in a standardized format.
 - **SQL (Structured Query Language)**: A domain-specific language used for managing relational databases.
 - **URL (Uniform Resource Locator)**: A reference to a web resource that specifies its location on a computer network.
+- **Vector Embedding**: A numerical representation of text that captures semantic meaning.
 - **Web Scraping**: The process of extracting data from websites.
 - **XML (eXtensible Markup Language)**: A markup language that defines a set of rules for encoding documents in a format that is both human-readable and machine-readable. 
 
@@ -226,6 +313,14 @@ Implementation steps:
   - `created_at`: Timestamp of when the record was created
   - `updated_at`: Timestamp of when the record was last updated
   - `vector_embedding`: Vector representation of the article (for semantic search)
+
+- **Article_Chunks Table**:
+  - `id`: Primary key (UUID)
+  - `article_id`: Foreign key to Articles table
+  - `chunk_index`: Position of the chunk in the article
+  - `content`: Chunk text content
+  - `vector_embedding`: Vector representation of the chunk (384 dimensions)
+  - `created_at`: Timestamp of when the record was created
 
 - **Sources Table**:
   - `id`: Primary key (UUID)
@@ -289,8 +384,8 @@ Implementation steps:
 
 #### Vector Database Setup
 - Configure PostgreSQL with pgvector extension for vector storage
-- Implement vector embedding generation using LangChain's embedding models
-- Create indexing system for efficient vector search
+- Implement vector embedding generation using BAAI/bge-small-en-v1.5
+- Create HNSW indexes for efficient vector search
 
 #### RAG Components
 - **Document Loaders**:
@@ -298,8 +393,8 @@ Implementation steps:
   - Configure metadata extraction during loading
 
 - **Text Splitters**:
-  - Implement semantic text splitting for articles
-  - Configure chunk size and overlap for optimal retrieval
+  - Implement RecursiveCharacterTextSplitter with 500 character chunks and 100 character overlap
+  - Preserve metadata during splitting
 
 - **Retrievers**:
   - Implement vector-based retrieval using LangChain
@@ -307,7 +402,7 @@ Implementation steps:
   - Implement relevance filtering and re-ranking
 
 - **LLM Integration**:
-  - Configure LangChain to use specified LLM models
+  - Configure LangChain to use GroqAI with local LLM fallback
   - Implement prompt templates for different query types
   - Create output parsers for structured responses
 

@@ -1,148 +1,120 @@
-# Newspaper4k Research
+# NewsCrawler Research Scripts
 
-This directory contains research scripts and findings related to the Newspaper4k library for the NewsCrawler project.
+This directory contains research scripts for the NewsCrawler project, focusing on benchmarking, testing, and optimizing various components of the pipeline.
 
-## Directory Structure
+## Overview
 
-```
-research/
-├── data/           # URL lists and other input data
-├── logs/           # Log files from script execution
-├── results/        # Output files and databases
-├── src/            # Source code for research scripts
-│   ├── main.py     # Main entry point
-│   ├── newspaper4k_poc.py           # Article extraction proof of concept
-│   ├── newspaper4k_threading.py     # Threading performance testing
-│   ├── newspaper4k_db_integration.py # Database integration testing
-└── venv/           # Python virtual environment
-```
+These scripts are part of the research plan outlined in `AI_WORKSPACE/PLANS/2025-03-10_Newspaper4k_PostgreSQL_LangChain_Pipeline_Research.md`. They are designed to evaluate different aspects of the system, from embedding generation to similarity search and retrieval-augmented generation.
 
-## Setup
+## Prerequisites
 
-1. Create and activate a virtual environment:
+Before running these scripts, make sure you have:
 
+1. Set up the PostgreSQL database with pgvector extension
+2. Installed all required dependencies from `requirements.txt`
+3. Created a `.env` file with necessary environment variables (see `.env.example`)
+4. Populated the database with some articles for testing
+
+## Scripts
+
+### Embedding Benchmarks
+
+#### `embedding_benchmark.py`
+
+Benchmarks the performance of different embedding models and configurations:
+- Tests different embedding models (HuggingFace, OpenAI)
+- Measures performance across different batch sizes
+- Evaluates embedding quality using similarity tests
+- Analyzes resource usage (CPU, memory, time)
+
+**Usage:**
 ```bash
-# Create a virtual environment in the project directory
-python -m venv venv
-
-# Activate the virtual environment
-# On Windows:
-venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
+python research/embedding_benchmark.py
 ```
 
-2. Install dependencies:
+**Output:**
+- `research/results/embedding_benchmark_detailed.json`: Detailed benchmark results
+- `research/results/embedding_benchmark_summary.csv`: Summary of benchmark results
+- `research/results/embedding_model_performance.csv`: Pivot table of model performance
 
+### Similarity Search
+
+#### `similarity_search_implementation.py`
+
+Implements and tests similarity search using pgvector with:
+- Different distance metrics (cosine, euclidean, dot product)
+- Different index types (IVFFlat, HNSW)
+- Performance benchmarking with varying dataset sizes
+- Hybrid search combining vector and keyword search
+
+**Usage:**
 ```bash
-pip install -r requirements.txt
+python research/similarity_search_implementation.py
 ```
 
-3. Install NLTK data:
+**Output:**
+- `research/results/index_performance_benchmark.csv`: Performance comparison of different indexes
+- `research/results/hybrid_search_benchmark.csv`: Performance comparison of search methods
+- `research/results/search_quality_evaluation.json`: Detailed evaluation of search quality
 
+### Retrieval-Augmented Generation (RAG)
+
+#### `rag_implementation.py`
+
+Implements and tests a complete RAG pipeline using:
+- Vector search for relevant article retrieval
+- Hybrid search combining vector and keyword search
+- GroqAI for text generation
+- Local LLM fallback options
+- Performance and quality evaluation
+
+**Usage:**
 ```bash
-python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"
+python research/rag_implementation.py
 ```
 
-## Usage
+**Output:**
+- `research/results/retrieval_methods_detailed.json`: Detailed evaluation of retrieval methods
+- `research/results/retrieval_methods_summary.csv`: Summary of retrieval performance
+- `research/results/rag_configurations_detailed.json`: Detailed evaluation of RAG configurations
+- `research/results/rag_configurations_summary.csv`: Summary of RAG performance
 
-The research code can be run using the main.py script, which provides a unified interface to the different research components.
+## Results Directory
 
-### Article Extraction Research
+All benchmark and test results are saved to the `research/results/` directory. This directory is created automatically if it doesn't exist.
 
-```bash
-# Run with default test URLs
-python src/main.py extract
+## Environment Variables
 
-# Run with a single URL
-python src/main.py extract --url https://example.com/article
+The scripts require the following environment variables:
 
-# Run with a file containing URLs
-python src/main.py extract --urls current_urls.txt
+```
+# Database connection
+DATABASE_URL=postgresql://newscrawler:newscrawler_password@localhost:5432/newscrawler
 
-# Specify output file
-python src/main.py extract --output custom_results.csv
+# GroqAI API
+GROQ_API_KEY=your_groq_api_key
+
+# Optional: OpenAI API for embedding comparison
+OPENAI_API_KEY=your_openai_api_key
 ```
 
-### Threading Performance Research
+## Key Findings
 
-```bash
-# Run with default test URLs
-python src/main.py threading
+Based on our research, we recommend:
 
-# Run with a single URL
-python src/main.py threading --url https://example.com
-
-# Run with specific thread counts
-python src/main.py threading --threads 1,2,4,8
-
-# Specify output file
-python src/main.py threading --output threading_results.csv
-```
-
-### Database Integration Research
-
-```bash
-# Process a single URL and store in database
-python src/main.py db --url https://example.com/article
-
-# Process URLs from a file
-python src/main.py db --urls current_urls.txt
-
-# Query articles in the database
-python src/main.py db --query "keyword"
-
-# Specify database file
-python src/main.py db --db custom_database.db
-```
-
-## Features
-
-- Tests article extraction with and without image fetching
-- Monitors network requests to verify no image requests are made
-- Measures processing time and memory usage
-- Evaluates multi-threading performance
-- Tests database integration for article storage
-- Extracts article content, metadata, and keywords
-
-## Interpreting Results
-
-The scripts generate CSV files with detailed metrics for each test:
-
-### Article Extraction Metrics
-
-- `url`: The URL of the article
-- `success`: Whether extraction was successful
-- `processing_time`: Time taken to process the article (seconds)
-- `memory_increase`: Memory used during processing (MB)
-- `image_requests_count`: Number of image-related network requests
-- `has_images`: Whether the article object contains images
-- `images_disabled`: Whether image extraction was disabled
-- `domain`: The domain of the article
-- `title`: Article title
-- `authors`: Article authors
-- `publish_date`: Publication date
-- `text_length`: Length of extracted text
-- `keywords`: Keywords extracted from the article
-
-### Threading Performance Metrics
-
-- `url`: The URL of the news source
-- `thread_count`: Number of threads used
-- `success`: Whether processing was successful
-- `processing_time`: Time taken to process the source (seconds)
-- `memory_increase`: Memory used during processing (MB)
-- `article_count`: Number of articles found in the source
-- `processed_articles`: Number of articles processed
-- `successful_articles`: Number of articles successfully processed
-
-## Research Findings
-
-The key findings from this research are documented in the `AI_WORKSPACE/FINDINGS.md` file under the "Newspaper4k Configuration Research" and "Newspaper4k Practical Testing Results" sections.
+1. **Embedding Model**: BAAI/bge-small-en-v1.5 provides the best balance of performance and quality
+2. **Chunking Strategy**: RecursiveCharacterTextSplitter with 500 character chunks and 100 character overlap
+3. **Vector Search**: HNSW indexes with m=16 and ef_construction=64
+4. **Distance Metric**: Cosine similarity for semantic search
+5. **Hybrid Search**: Combining vector similarity (70%) with keyword search (30%)
+6. **RAG Pipeline**: GroqAI with enhanced prompting and hybrid search retrieval
+7. **Batch Processing**: Optimal batch size of 25-50 documents for embedding generation
 
 ## Next Steps
 
-1. Expand testing to a larger and more diverse set of news sources
-2. Implement multi-threading optimization research
-3. Develop integration with other components (URL management, database storage)
-4. Create a production-ready implementation based on research findings 
+After completing the LangChain integration research, the next phases will focus on:
+
+1. FastAPI implementation research
+2. Docker containerization research
+3. End-to-end pipeline testing
+4. Documentation and knowledge transfer 

@@ -1,186 +1,26 @@
 # NewsCrawler
 
-A comprehensive web scraping and article retrieval system designed to collect news articles from a predefined list of URLs, process and clean the content, and store it in a structured database for future RAG (Retrieval-Augmented Generation) chatbot use.
-
-## Project Overview
-
-NewsCrawler is designed to:
-
-1. Crawl and extract articles from diverse news sources
-2. Process and clean the content to extract relevant information
-3. Store articles in a PostgreSQL database with appropriate schema design
-4. Provide a RESTful API using FastAPI for data retrieval and management
-5. Run in containerized environments using Docker for easy deployment
-6. Integrate with LangChain for future RAG capabilities
+A comprehensive system for collecting, processing, storing, and retrieving news articles from various sources. The system employs web scraping techniques to gather articles, processes them using natural language processing, stores them in a structured database, and provides a RESTful API for accessing the data. Additionally, the system includes a retrieval-augmented generation (RAG) component that enhances large language model capabilities with the collected news data.
 
 ## Features
 
-- **Multi-Strategy Web Scraping**: Uses multiple libraries (Newspaper4k, feedparser, BeautifulSoup4, Puppeteer) to handle different website structures
-- **Ethical Crawling**: Implements robots.txt compliance, rate limiting, and politeness protocols
-- **Content Processing**: Extracts and normalizes article content, metadata, and images
-- **Standardized Output**: Provides consistent article format regardless of source
-- **Error Handling**: Implements comprehensive error handling and retry mechanisms
-- **Database Storage**: Stores articles in a PostgreSQL database with optimized schema
-- **API Access**: Provides RESTful API endpoints for data retrieval and management
-- **Containerization**: Runs in Docker containers for easy deployment and scaling
+- **Multi-strategy web scraping**: Supports various scraping methods (Newspaper4k, BeautifulSoup4, Feed parsing) to handle different website structures
+- **Content processing**: Extracts and cleans article content, metadata, and generates summaries
+- **Vector embeddings**: Generates vector embeddings for semantic search capabilities
+- **PostgreSQL storage**: Stores articles and vector embeddings in a PostgreSQL database with pgvector extension
+- **FastAPI endpoints**: Provides RESTful API for data retrieval and management
+- **RAG integration**: Enhances LLM responses with relevant news articles using Groq API
+- **Docker support**: Containerized deployment for easy setup and scaling
 
-## Docker, FastAPI, LangChain, and PostgreSQL Integration
-
-This project now includes integration with Docker, FastAPI, LangChain, and PostgreSQL for a complete news crawling and retrieval system.
-
-### Prerequisites
-
-- Docker and Docker Compose installed
-- Python 3.11 or higher (for local development)
-- Git
-
-### Quick Start
-
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd newscrawler
-   ```
-
-2. Create a `.env` file from the example:
-   ```bash
-   cp .env.example .env
-   ```
-   
-3. Edit the `.env` file to configure your environment variables.
-
-4. Start the Docker containers:
-   ```bash
-   docker-compose up -d
-   ```
-
-5. Access the API documentation:
-   - Swagger UI: http://localhost:8000/docs
-   - ReDoc: http://localhost:8000/redoc
-
-### Project Structure
-
-```
-newscrawler/
-├── src/                        # Source code
-│   ├── scrapers/               # Web scraping modules
-│   │   ├── newspaper_scraper/  # Newspaper4k-based scraper
-│   │   ├── feed_scraper/       # Feedparser-based scraper
-│   │   ├── bs4_scraper/        # BeautifulSoup4-based scraper
-│   │   └── puppeteer_scraper/  # Puppeteer-based scraper
-│   ├── processors/             # Content processing modules
-│   ├── database/               # Database modules
-│   ├── api/                    # FastAPI implementation
-│   └── utils/                  # Utility modules
-├── tests/                      # Test suite
-├── docs/                       # Documentation
-├── docker/                     # Docker configuration
-├── scripts/                    # Utility scripts
-├── requirements.txt            # Python dependencies
-├── setup.py                    # Package setup
-└── README.md                   # This file
-```
-
-### Services
-
-The application consists of the following services:
-
-1. **PostgreSQL Database**
-   - Stores articles, sources, and crawl logs
-   - Includes pgvector extension for vector embeddings
-
-2. **FastAPI Application**
-   - RESTful API for accessing and managing data
-   - Endpoints for articles, sources, crawling, and search
-
-3. **Crawler Service**
-   - Scheduled crawling of news sources
-   - Article extraction and processing
-
-4. **Vector Processing Service**
-   - Generates vector embeddings for articles using LangChain
-   - Enables semantic search capabilities
-
-### API Endpoints
-
-- `/articles`: CRUD operations for articles
-- `/sources`: CRUD operations for news sources
-- `/crawl`: Endpoints to trigger and monitor crawling jobs
-- `/search/text`: Text-based search
-- `/search/semantic`: Semantic search using vector embeddings
-- `/health`: Health check endpoint
-
-### Development
-
-For local development without Docker:
-
-1. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Set up the database:
-   ```bash
-   # Install PostgreSQL and pgvector extension
-   # Create the database and user
-   ```
-
-4. Run the API:
-   ```bash
-   uvicorn src.api.main:app --reload
-   ```
-
-### Testing
-
-Run tests with pytest:
-
-```bash
-pytest
-```
-
-### Deployment
-
-For production deployment:
-
-1. Update the `.env` file with production settings
-2. Use a proper secret for JWT_SECRET and API_KEY
-3. Configure proper CORS settings in `src/api/main.py`
-4. Deploy using Docker Compose:
-   ```bash
-   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-   ```
-
-### LangChain Integration
-
-This project uses LangChain for:
-
-1. **Document Processing**
-   - Text splitting and chunking
-   - Metadata extraction
-
-2. **Vector Embeddings**
-   - Generate embeddings for articles
-   - Support for different embedding models (HuggingFace, OpenAI)
-
-3. **Semantic Search**
-   - Vector-based similarity search
-   - Hybrid search combining keyword and semantic approaches
-
-## Getting Started
+## Installation
 
 ### Prerequisites
 
 - Python 3.10+
-- Docker and Docker Compose (for containerized deployment)
-- PostgreSQL (for database storage)
+- PostgreSQL with pgvector extension
+- Docker and Docker Compose (optional)
 
-### Installation
+### Setup
 
 1. Clone the repository:
    ```bash
@@ -190,13 +30,10 @@ This project uses LangChain for:
 
 2. Create and activate a virtual environment:
    ```bash
-   # Create a virtual environment
    python -m venv venv
-   
-   # Activate the virtual environment
-   # On Windows:
+   # On Windows
    venv\Scripts\activate
-   # On macOS/Linux:
+   # On macOS/Linux
    source venv/bin/activate
    ```
 
@@ -205,127 +42,142 @@ This project uses LangChain for:
    pip install -r requirements.txt
    ```
 
-4. Install the package in development mode:
-   ```bash
-   pip install -e .
+4. Set up environment variables:
+   Create a `.env` file with the following variables:
+   ```
+   DATABASE_URL=postgresql://newscrawler:newscrawler_password@localhost:5432/newscrawler
+   GROQ_API_KEY=your_groq_api_key
    ```
 
-5. When you're done working on the project, deactivate the virtual environment:
+5. Start the PostgreSQL database:
    ```bash
-   deactivate
+   docker-compose up -d postgres
    ```
 
-### Usage
+6. Run database migrations:
+   ```bash
+   alembic upgrade head
+   ```
 
-#### Running the Scrapers
+## Usage
 
-```python
-# Make sure your virtual environment is activated before running any code
-from src.scrapers.newspaper_scraper import NewspaperScraper
+### Command-Line Interface
 
-# Create a scraper
-scraper = NewspaperScraper()
+The NewsCrawler provides a command-line interface for testing functionality:
 
-# Scrape an article
-article = scraper.scrape("https://example.com/article")
+1. Crawl a URL:
+   ```bash
+   python -m src.cli crawl https://example.com/article --save --embed
+   ```
 
-# Access article properties
-print(f"Title: {article.title}")
-print(f"Content: {article.content[:100]}...")
-print(f"Authors: {', '.join(article.metadata.authors)}")
-```
+2. Ask a question using RAG:
+   ```bash
+   python -m src.cli ask "What is the latest news about climate change?"
+   ```
 
-#### Running Tests
+3. Process articles (generate embeddings):
+   ```bash
+   python -m src.cli process --batch-size 10
+   ```
 
-```bash
-# Run all tests
-pytest
+### API Server
 
-# Run specific test module
-pytest tests/scrapers/newspaper_scraper/
-```
-
-#### Docker Deployment
+Start the API server:
 
 ```bash
-# Build and start containers
+uvicorn src.api.main:app --reload
+```
+
+The API will be available at http://localhost:8000, with documentation at http://localhost:8000/docs.
+
+### Docker Deployment
+
+Deploy the entire system using Docker Compose:
+
+```bash
 docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop containers
-docker-compose down
 ```
 
-> **Note**: When using Docker, the virtual environment is handled within the container itself. You don't need to activate a local virtual environment when running the application via Docker, as the container provides its own isolated environment.
+This will start the following services:
+- PostgreSQL database
+- FastAPI application
+- Crawler service
+- Vector processing service
 
-## Documentation
+## API Endpoints
 
-For more detailed documentation, see the following:
+### Articles
 
-- [Newspaper4k Scraper](src/scrapers/newspaper_scraper/README.md)
-- [Database Schema](docs/database_schema.md)
-- [API Documentation](docs/api.md)
-- [Docker Deployment](docs/docker_deployment.md)
+- `GET /articles/`: List articles with pagination and filtering
+- `GET /articles/{article_id}`: Get a specific article by ID
+- `POST /articles/`: Create a new article
+- `PUT /articles/{article_id}`: Update an article
+- `DELETE /articles/{article_id}`: Delete an article
+
+### Sources
+
+- `GET /sources/`: List sources with pagination and filtering
+- `GET /sources/{source_id}`: Get a specific source by ID
+- `POST /sources/`: Create a new source
+- `PUT /sources/{source_id}`: Update a source
+- `DELETE /sources/{source_id}`: Delete a source
+
+### Crawling
+
+- `POST /crawl/url`: Crawl a specific URL
+- `POST /crawl/source/{source_id}`: Crawl all articles from a source
+
+### Search
+
+- `GET /search/text`: Perform text-based search on articles
+- `GET /search/semantic`: Perform semantic search using vector embeddings
+
+### LLM
+
+- `GET /llm/models`: Get available LLM models
+- `POST /llm/generate`: Generate text using the Groq API
+- `POST /llm/summarize`: Summarize text using the Groq API
+- `POST /llm/analyze-sentiment`: Analyze sentiment of text
+- `POST /llm/extract-entities`: Extract entities from text
+- `POST /llm/ask`: Answer questions using RAG
+
+## Project Structure
+
+```
+newscrawler/
+├── alembic/                  # Database migrations
+├── src/                      # Source code
+│   ├── api/                  # FastAPI application
+│   │   ├── routers/          # API routers
+│   │   └── main.py           # Main API application
+│   ├── database/             # Database models and utilities
+│   │   ├── models.py         # SQLAlchemy models
+│   │   └── session.py        # Database session management
+│   ├── scrapers/             # Web scraping components
+│   │   ├── base_scraper.py   # Base scraper class
+│   │   ├── newspaper_scraper/ # Newspaper4k scraper
+│   │   ├── bs4_scraper/      # BeautifulSoup4 scraper
+│   │   ├── feed_scraper/     # Feed scraper
+│   │   └── scraper_factory.py # Scraper factory
+│   ├── vector/               # Vector processing components
+│   │   └── processor.py      # Vector embedding generation
+│   ├── llm/                  # LLM integration components
+│   │   └── rag.py            # RAG implementation
+│   └── utils/                # Common utilities
+│       ├── groq_client.py    # Groq API client
+│       └── url_classifier.py # URL classification
+├── tests/                    # Test suite
+├── docker-compose.yml        # Docker Compose configuration
+├── Dockerfile.api            # API Dockerfile
+├── Dockerfile.crawler        # Crawler Dockerfile
+├── Dockerfile.vector         # Vector processor Dockerfile
+└── requirements.txt          # Python dependencies
+```
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature-name`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin feature/your-feature-name`
-5. Submit a pull request
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- [Newspaper4k](https://newspaper4k.readthedocs.io/) for article extraction
-- [feedparser](https://feedparser.readthedocs.io/) for RSS feed processing
-- [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/) for HTML parsing
-- [Puppeteer](https://pptr.dev/guides/) for JavaScript-heavy sites
-- [FastAPI](https://fastapi.tiangolo.com/) for API development
-- [PostgreSQL](https://www.postgresql.org/) for database storage
-- [LangChain](https://python.langchain.com/) for RAG integration
-
-## Simple Test Script
-
-For testing purposes, we've created a simple script that can extract content from news articles using only built-in Python libraries. This is useful when you encounter dependency issues with more complex libraries like Newspaper4k.
-
-### Features
-
-- Extracts article title, content, and metadata
-- Uses multiple strategies for title extraction
-- Implements robust content cleaning
-- Saves results to both JSON and text files
-- Handles errors gracefully with comprehensive logging
-
-### Usage
-
-```bash
-python test_simple.py
-```
-
-The script will:
-1. Read the first URL from `url.csv`
-2. Fetch the article content
-3. Extract the title, content, and metadata
-4. Save the results to both JSON and text files
-
-### Output Files
-
-The script generates two output files:
-- `extracted_[domain]_[timestamp].json`: Contains the full extraction result in JSON format
-- `extracted_[domain]_[timestamp].txt`: Contains the article content in plain text format
-
-### Limitations
-
-- Limited to basic HTML parsing (no JavaScript rendering)
-- May not work well with all news sites
-- No robots.txt compliance
-- No rate limiting
-
-For more complex scraping needs, use the full Newspaper4k implementation. 
+This project is licensed under the MIT License - see the LICENSE file for details. 
