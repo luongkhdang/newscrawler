@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
 from typing import List, Optional
-from sqlalchemy import Column, String, Text, Boolean, Integer, DateTime, ForeignKey, ARRAY
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Text, Boolean, Integer, DateTime, ForeignKey, ARRAY, Float
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
 from pgvector.sqlalchemy import Vector
 
@@ -25,6 +25,12 @@ class Article(Base):
     vector_embedding = Column(Vector(1536), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # New fields for topic classification and relevance
+    topics = Column(ARRAY(Text), nullable=True)
+    entities = Column(JSONB, nullable=True)
+    relevance_score = Column(Float, nullable=True)
+    is_relevant = Column(Boolean, default=True)
 
     def __repr__(self):
         return f"<Article(id={self.id}, title={self.title})>"
@@ -43,6 +49,11 @@ class Source(Base):
     crawl_frequency = Column(Integer, default=24)  # in hours
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # New fields for authentication and proxy settings
+    requires_auth = Column(Boolean, default=False)
+    auth_config = Column(JSONB, nullable=True)
+    proxy_settings = Column(JSONB, nullable=True)
 
     crawl_logs = relationship("CrawlLog", back_populates="source")
 

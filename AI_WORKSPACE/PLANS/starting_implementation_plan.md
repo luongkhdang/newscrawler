@@ -15,21 +15,30 @@ The project has made significant progress with the following components already 
 - RAG (Retrieval-Augmented Generation) implementation with Groq API
 - Command-line interface for testing
 - Docker configuration for containerization
+- Topic classification and entity extraction modules
 
 ## Phase 1: Database Setup and Migrations (In Progress)
 
 ### 1.1 Database Configuration
 - [x] Define database models for articles, sources, and logs
 - [x] Set up SQLAlchemy ORM models
-- [ ] Complete database migrations with Alembic
-- [ ] Create initial migration script
-- [ ] Test database schema with sample data
+- [x] Complete database migrations with Alembic
+- [x] Create initial migration script
+- [x] Test database schema with sample data
 
 ### 1.2 Database Optimization
 - [ ] Implement efficient indexing for common queries
-- [ ] Configure pgvector extension for vector search
+  - [x] Create indexes for frequently queried fields (published_date, source_domain, category)
+  - [ ] Implement partial indexes for filtered queries
+  - [ ] Add composite indexes for multi-field queries
+- [x] Configure pgvector extension for vector search
 - [ ] Set up connection pooling for improved performance
+  - [ ] Implement PgBouncer for connection pooling
+  - [ ] Configure optimal pool sizes based on workload
+  - [ ] Add connection timeout and retry logic
 - [ ] Implement database sharding strategy (if needed for scale)
+  - [ ] Evaluate sharding requirements based on data volume projections
+  - [ ] Design time-based partitioning for historical data
 
 ## Phase 2: API Enhancement and Testing (In Progress)
 
@@ -38,65 +47,170 @@ The project has made significant progress with the following components already 
 - [x] Create source management endpoints
 - [x] Implement search functionality (text and semantic)
 - [x] Add LLM integration endpoints
-- [ ] Implement comprehensive error handling
-- [ ] Add pagination and filtering to all list endpoints
-- [ ] Implement rate limiting for API endpoints
+- [x] Implement comprehensive error handling
+- [x] Add pagination and filtering to all list endpoints
+- [x] Implement rate limiting for API endpoints
 
 ### 2.2 API Testing
-- [ ] Create unit tests for API endpoints
-- [ ] Implement integration tests for API workflows
+- [x] Create unit tests for API endpoints
+- [x] Implement integration tests for API workflows
 - [ ] Test API performance under load
+  - [ ] Set up load testing environment with Locust or JMeter
+  - [ ] Create test scenarios for common API usage patterns
+  - [ ] Establish performance baselines and thresholds
+  - [ ] Identify and address performance bottlenecks
 - [ ] Document API endpoints with examples
+  - [ ] Create OpenAPI documentation with detailed examples
+  - [ ] Add Postman collection for API testing
+  - [ ] Create usage tutorials for common workflows
 
 ## Phase 3: Vector Search and RAG Optimization (In Progress)
 
 ### 3.1 Vector Search Enhancement
 - [x] Implement basic vector similarity search
 - [x] Add vector indexing for performance
-- [ ] Implement hybrid search combining vector and keyword search
-- [ ] Optimize vector search performance
-- [ ] Add caching for frequent queries
+- [x] Implement hybrid search combining vector and keyword search
+- [x] Optimize vector search performance
+- [x] Add caching for frequent queries
 
 ### 3.2 RAG System Enhancement
 - [x] Implement basic RAG functionality
 - [x] Integrate with Groq API
-- [ ] Implement more sophisticated context assembly
-- [ ] Add support for different embedding models
-- [ ] Implement response caching for similar queries
-- [ ] Add evaluation metrics for RAG quality
+- [x] Implement more sophisticated context assembly
+- [x] Add support for different embedding models
+- [x] Implement response caching for similar queries
+- [x] Add evaluation metrics for RAG quality
 
 ## Phase 4: Crawler Enhancement and Scheduling (Planned)
 
 ### 4.1 Crawler Optimization
 - [x] Implement multi-strategy scraping
-- [ ] Add support for JavaScript-heavy sites
-- [ ] Implement robots.txt compliance
-- [ ] Add rate limiting and politeness protocols
+- [x] Add support for JavaScript-heavy sites with Puppeteer
+- [x] Implement robots.txt compliance
+- [x] Add rate limiting and politeness protocols
 - [ ] Implement proxy rotation for improved throughput
+  - [ ] Set up proxy management system
+  - [ ] Implement proxy health checking
+  - [ ] Add automatic proxy rotation based on response codes
+  - [ ] Configure proxy selection based on target domain
 - [ ] Add support for authentication for protected content
+  - [x] Implement credential storage with encryption
+  - [ ] Create authentication strategies for different site types
+  - [ ] Add session management for authenticated crawling
 
 ### 4.2 Scheduling and Monitoring
-- [ ] Implement scheduled crawling of sources
-- [ ] Add crawl job queue with priority
-- [ ] Implement crawl status monitoring
+- [x] Implement scheduled crawling of sources
+- [x] Add crawl job queue with priority
+- [x] Implement crawl status monitoring
 - [ ] Add failure recovery mechanisms
+  - [ ] Implement automatic retry with exponential backoff
+  - [ ] Create circuit breaker pattern for failing sources
+  - [ ] Add dead letter queue for failed crawl jobs
+  - [ ] Implement notification system for persistent failures
 - [ ] Create dashboard for crawl statistics
+  - [ ] Design and implement dashboard UI
+  - [ ] Add real-time crawl status visualization
+  - [ ] Create historical performance charts
+  - [ ] Implement source health monitoring
 
 ## Phase 5: Monitoring, Logging, and Documentation (Planned)
 
 ### 5.1 Monitoring and Logging
-- [ ] Implement comprehensive logging
-- [ ] Add metrics collection for performance monitoring
-- [ ] Create health check endpoints
+- [x] Implement comprehensive logging
+- [x] Add metrics collection for performance monitoring
+- [x] Create health check endpoints
 - [ ] Implement alerting for critical issues
+  - [ ] Set up alerting thresholds for system metrics
+  - [ ] Configure notification channels (email, Slack, etc.)
+  - [ ] Implement alert aggregation to prevent alert storms
+  - [ ] Create escalation policies for different alert severities
 - [ ] Set up log aggregation
+  - [ ] Configure centralized logging with ELK stack or similar
+  - [ ] Implement structured logging format
+  - [ ] Create log retention and rotation policies
+  - [ ] Add log search and visualization capabilities
 
 ### 5.2 Documentation
 - [x] Update README.md with usage instructions
 - [ ] Create API documentation with examples
+  - [ ] Document all API endpoints with request/response examples
+  - [ ] Add authentication and authorization details
+  - [ ] Create API usage tutorials for common scenarios
+  - [ ] Document error codes and troubleshooting steps
 - [ ] Document system architecture
+  - [ ] Create architecture diagrams
+  - [ ] Document component interactions
+  - [ ] Add sequence diagrams for key workflows
+  - [ ] Document scaling considerations
 - [ ] Create deployment guides
+  - [ ] Document Docker deployment process
+  - [ ] Add Kubernetes deployment configuration
+  - [ ] Create cloud deployment guides (AWS, GCP, Azure)
+  - [ ] Document backup and recovery procedures
 - [ ] Add code documentation and comments
+  - [ ] Ensure all modules have docstrings
+  - [ ] Add type hints throughout the codebase
+  - [ ] Document complex algorithms and business logic
+  - [ ] Create developer onboarding guide
+
+## Phase 6: Content Filtering and Topic Focus (In Progress)
+
+### 6.1 Topic Classification System
+- [x] Implement NLP-based topic classification
+  - [x] Create model-based classification with fallback to keyword-based approach
+  - [x] Implement topic scoring and threshold filtering
+  - [x] Add multi-label classification for articles spanning multiple topics
+  - [ ] Create feedback loop for classification improvement
+- [x] Add entity extraction for countries and organizations
+  - [x] Implement named entity recognition for key entities
+  - [x] Create entity linking to knowledge base
+  - [x] Add entity relationship mapping
+  - [x] Implement entity-based filtering
+
+### 6.2 Content Relevance Filtering
+- [x] Implement relevance scoring system
+  - [x] Create scoring algorithm based on topic match, entity presence, and content quality
+  - [x] Add configurable thresholds for different topics
+  - [x] Implement content quality assessment
+  - [ ] Create feedback mechanism for relevance scoring
+- [ ] Add storage optimization based on relevance
+  - [x] Update database schema with relevance fields
+  - [x] Create migration for new fields
+  - [ ] Create retention policies tied to relevance scores
+  - [ ] Add automatic content pruning for low-relevance articles
+  - [ ] Implement content summarization for storage efficiency
+
+## Implementation Timeline
+
+### Week 1-2: Database Optimization and API Testing
+- Complete database indexing for common queries
+- Set up connection pooling with PgBouncer
+- Implement API load testing and address performance issues
+- Complete API documentation with examples
+
+### Week 3-4: Crawler Enhancement
+- Implement proxy rotation system
+- Add authentication support for protected content
+- Create failure recovery mechanisms
+- Begin dashboard development for crawl statistics
+
+### Week 5-6: Monitoring, Alerting, and Documentation
+- Set up alerting for critical issues
+- Implement log aggregation with ELK stack
+- Create system architecture documentation
+- Develop deployment guides for different environments
+
+### Week 7-8: Content Filtering and Topic Focus
+- ✅ Implement topic classification system
+- ✅ Add entity extraction and relationship mapping
+- ✅ Create relevance scoring algorithm
+- Implement storage optimization based on relevance
+
+### Week 9-10: Final Integration and Testing
+- Complete dashboard for crawl statistics
+- Finalize all documentation
+- Perform end-to-end testing
+- Address any remaining issues
 
 ## Implementation Details
 
@@ -121,6 +235,10 @@ newscrawler/
 │   │   └── processor.py      # Vector embedding generation
 │   ├── llm/                  # LLM integration components
 │   │   └── rag.py            # RAG implementation
+│   ├── topics/               # Topic classification components
+│   │   ├── classifier.py     # Topic classifier
+│   │   ├── entities.py       # Entity extraction
+│   │   └── relevance.py      # Relevance scoring
 │   └── utils/                # Common utilities
 │       ├── groq_client.py    # Groq API client
 │       └── url_classifier.py # URL classification
@@ -161,6 +279,16 @@ groq>=0.18.0
 langchain-openai>=0.0.1
 langchain-huggingface>=0.0.1
 
+# Topic Classification
+spacy>=3.5.0
+transformers>=4.28.0
+scikit-learn>=1.2.2
+
+# Monitoring and Logging
+prometheus-client>=0.16.0
+python-json-logger>=2.0.7
+elasticsearch>=8.8.0
+
 # Utilities
 python-dotenv>=1.0.0
 tenacity>=8.2.0
@@ -187,6 +315,11 @@ class Article(Base):
     vector_embedding = Column(Vector(1536), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    # New fields for topic classification and relevance
+    topics = Column(ARRAY(Text), nullable=True)
+    entities = Column(JSONB, nullable=True)
+    relevance_score = Column(Float, nullable=True)
+    is_relevant = Column(Boolean, default=True)
 ```
 
 #### Sources Table
@@ -205,120 +338,110 @@ class Source(Base):
     crawl_frequency = Column(Integer, default=24)  # in hours
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    # New fields for authentication and proxy settings
+    requires_auth = Column(Boolean, default=False)
+    auth_config = Column(JSONB, nullable=True)
+    proxy_settings = Column(JSONB, nullable=True)
 ```
 
-#### Crawl Logs Table
-```python
-class CrawlLog(Base):
-    """Crawl log model."""
-    __tablename__ = "crawl_logs"
-    
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    source_id = Column(UUID(as_uuid=True), ForeignKey("sources.id"))
-    start_time = Column(DateTime, nullable=False)
-    end_time = Column(DateTime, nullable=True)
-    articles_found = Column(Integer, default=0)
-    articles_added = Column(Integer, default=0)
-    articles_updated = Column(Integer, default=0)
-    status = Column(Text, default="in_progress")
-    error_message = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-```
+## Implementation Progress Summary
 
-### RAG Implementation
+We have made significant progress on the NewsCrawler implementation plan. Here's a summary of what we've accomplished and what's left to do:
 
-The RAG system has been implemented with the following components:
+### Completed Tasks
 
-```python
-class RAGSystem:
-    """
-    Retrieval-Augmented Generation system for enhancing LLM responses with news articles.
-    """
-    
-    def __init__(self, db_session: Optional[Session] = None):
-        """Initialize the RAG system."""
-        self.db = db_session or SessionLocal()
-        self.groq_client = get_groq_client()
-        self.logger = logging.getLogger(__name__)
-    
-    def retrieve_relevant_articles(
-        self, 
-        query: str, 
-        limit: int = 5,
-        min_similarity: float = 0.7
-    ) -> List[Dict[str, Any]]:
-        """Retrieve articles relevant to the query using vector similarity."""
-        # Implementation details...
-    
-    def generate_context(self, articles: List[Dict[str, Any]]) -> str:
-        """Generate context from retrieved articles."""
-        # Implementation details...
-    
-    def answer_question(
-        self, 
-        query: str,
-        model: str = "llama3-70b-8192",
-        max_tokens: int = 1024,
-        temperature: float = 0.7
-    ) -> Dict[str, Any]:
-        """Answer a question using RAG."""
-        # Implementation details...
-```
+1. **Database Setup and Migrations**
+   - Defined database models for articles, sources, and logs
+   - Set up SQLAlchemy ORM models
+   - Created and executed database migrations
+   - Configured pgvector extension for vector search
+   - Added new fields for topic classification and relevance
 
-### CLI Implementation
+2. **API Enhancement**
+   - Implemented comprehensive article retrieval endpoints with pagination and filtering
+   - Enhanced search functionality with text, semantic, and hybrid search options
+   - Added robust error handling throughout the API
+   - Implemented rate limiting to prevent abuse
+   - Added LLM integration endpoints
 
-A command-line interface has been implemented for testing:
+3. **Vector Search Optimization**
+   - Implemented basic vector similarity search
+   - Added vector indexing for performance
+   - Created a hybrid search combining vector and keyword search
+   - Implemented caching for embeddings and search results
+   - Optimized vector search performance
 
-```python
-def main():
-    """Main entry point for the CLI."""
-    parser = argparse.ArgumentParser(description="NewsCrawler CLI")
-    subparsers = parser.add_subparsers(dest="command", help="Command to run")
-    
-    # Crawl command
-    crawl_parser = subparsers.add_parser("crawl", help="Crawl a URL")
-    crawl_parser.add_argument("url", help="URL to crawl")
-    crawl_parser.add_argument("--save", action="store_true", help="Save the article to the database")
-    crawl_parser.add_argument("--embed", action="store_true", help="Generate embedding for the article")
-    
-    # Ask command
-    ask_parser = subparsers.add_parser("ask", help="Ask a question using RAG")
-    ask_parser.add_argument("question", help="Question to ask")
-    
-    # Process command
-    process_parser = subparsers.add_parser("process", help="Process articles")
-    process_parser.add_argument("--batch-size", type=int, default=10, help="Batch size for processing")
-```
+4. **RAG System Enhancement**
+   - Implemented sophisticated context assembly strategies
+   - Added support for different embedding models
+   - Implemented response caching for similar queries
+   - Added evaluation metrics for RAG quality
 
-## Next Steps
+5. **Crawler Scheduling**
+   - Implemented scheduled crawling of sources
+   - Added crawl job queue with priority
+   - Implemented crawl status monitoring
+   - Added CLI and API interfaces for crawler management
 
-The following tasks should be prioritized to complete the implementation:
+6. **Crawler Enhancement**
+   - Implemented multi-strategy scraping
+   - Added support for JavaScript-heavy sites with Puppeteer
+   - Implemented robots.txt compliance
+   - Added rate limiting and politeness protocols
 
-1. **Complete Database Migrations**:
-   - Finish setting up Alembic
-   - Create initial migration script
-   - Test database schema with sample data
+7. **Monitoring and Logging**
+   - Implemented comprehensive logging with different output formats
+   - Added metrics collection for performance monitoring
+   - Created health check and metrics endpoints
+   - Added Prometheus-compatible metrics export
 
-2. **Enhance API Endpoints**:
-   - Implement comprehensive error handling
-   - Add pagination and filtering to all list endpoints
-   - Create unit and integration tests
+8. **Topic Classification and Content Filtering**
+   - Implemented topic classification system with model-based and keyword-based approaches
+   - Added entity extraction for countries, organizations, and people
+   - Created relevance scoring algorithm based on topic match, entity presence, and content quality
+   - Updated database schema with fields for topics, entities, and relevance
 
-3. **Optimize Vector Search and RAG**:
-   - Implement hybrid search
-   - Add caching for frequent queries
-   - Enhance context assembly for better RAG responses
+### Current Focus Areas
 
-4. **Implement Crawler Scheduling**:
-   - Add scheduled crawling of sources
-   - Implement crawl job queue
-   - Add monitoring and failure recovery
+1. **Database Optimization**
+   - Implementing efficient indexing for common queries
+   - Setting up connection pooling for improved performance
 
-5. **Add Monitoring and Documentation**:
-   - Implement comprehensive logging
-   - Add metrics collection
-   - Complete API documentation
-   - Create deployment guides
+2. **API Testing and Documentation**
+   - Testing API performance under load
+   - Creating comprehensive API documentation with examples
+
+3. **Crawler Enhancement**
+   - Implementing proxy rotation for improved throughput
+   - Adding support for authentication for protected content
+   - Creating failure recovery mechanisms
+
+4. **Content Filtering Integration**
+   - Integrating topic classification and relevance scoring into the article processing pipeline
+   - Implementing storage optimization based on relevance scores
+   - Creating retention policies for content management
+
+### Next Steps
+
+The immediate next steps are:
+
+1. **Integrate Topic Classification into Processing Pipeline**
+   - Update article processing to include topic classification and relevance scoring
+   - Implement filtering based on relevance scores
+   - Add API endpoints for topic-based search and filtering
+
+2. **Complete Database Optimization**
+   - Implement indexes for frequently queried fields
+   - Set up PgBouncer for connection pooling
+
+3. **Finalize API Testing**
+   - Set up load testing environment
+   - Create test scenarios and establish performance baselines
+   - Address any performance bottlenecks
+
+4. **Begin Crawler Enhancement**
+   - Implement proxy rotation system
+   - Add authentication support for protected content
 
 ## Getting Started Guide
 

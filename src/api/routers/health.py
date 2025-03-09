@@ -1,35 +1,56 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+from pydantic import BaseModel
+from typing import Dict, Any
+import logging
+import os
+import psutil
 import time
 
 from src.database.session import get_db
+from src.utils.cache import vector_cache, search_cache
 
-router = APIRouter()
+router = APIRouter(prefix="/health", tags=["health"])
+logger = logging.getLogger(__name__)
 
-@router.get("/health")
-async def health_check(db: Session = Depends(get_db)):
+class HealthResponse(BaseModel):
+    """Health check response model."""
+    status: str
+    version: str
+    uptime: float
+    memory_usage: Dict[str, Any]
+    environment: str
+    cache_stats: Dict[str, Any]
+
+start_time = time.time()
+
+@router.get("", response_model=HealthResponse)
+async def health_check():
     """
     Health check endpoint.
     
     Returns:
-        dict: Health status information
+        HealthResponse: Health check information
     """
-    # Check database connection
-    db_status = "healthy"
-    db_response_time = 0
-    try:
-        start_time = time.time()
-        db.execute("SELECT 1")
-        db_response_time = time.time() - start_time
-    except Exception as e:
-        db_status = f"unhealthy: {str(e)}"
+    # Get memory usage
+    process = psutil.Process(os.getpid())
+    memory_info = process.memory_info()
+    
+    # Get cache statistics
+    cache_stats = {
+        "vector_cache": vector_cache.stats(),
+        "search_cache": search_cache.stats()
+    }
     
     return {
-        "status": "ok",
-        "timestamp": time.time(),
-        "database": {
-            "status": db_status,
-            "response_time_ms": round(db_response_time * 1000, 2)
+        "status": "healthy",
+        "version": "0.1.0",
+        "uptime": time.time() - start_time,
+        "memory_usage": {
+            "rss": memory_info.rss,
+            "vms": memory_info.vms,
+            "rss_mb": memory_info.rss / (1024 * 1024),
+            "vms_mb": memory_info.vms / (1024 * 1024)
         },
-        "version": "0.1.0"
+        "environment": os.getenv("ENVIRONMENT", "development"),
+        "cache_stats": cache_stats
     } 

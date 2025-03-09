@@ -35,6 +35,29 @@ class URLClassifier:
             r'vue',
             r'spa',
             r'single-page',
+            r'next\.js',
+            r'gatsby',
+            r'nuxt',
+            r'svelte',
+            r'ember',
+            r'backbone',
+            r'knockout',
+            r'meteor',
+            r'mithril',
+            r'preact',
+            r'stimulus',
+            r'webcomponents',
+            r'shadow-dom',
+            r'dynamic',
+            r'interactive',
+            r'ajax',
+            r'webpack',
+            r'parcel',
+            r'rollup',
+            r'vite',
+            r'esbuild',
+            r'snowpack',
+            r'turbopack',
         ],
         'paywall': [
             r'subscriber',
@@ -179,6 +202,10 @@ class URLClassifier:
         if self._check_for_feed(domain):
             features['has_feed'] = True
         
+        # Check for JavaScript-heavy site
+        if not features['js_heavy']:
+            features['js_heavy'] = self._check_for_js_heavy(url)
+        
         # Determine if the site has a complex structure
         # This is a simplified heuristic - in a real system, we would do more analysis
         if features['js_heavy'] or features['paywall']:
@@ -222,6 +249,72 @@ class URLClassifier:
             except Exception as e:
                 self.logger.debug(f"Error checking feed at {feed_url}: {str(e)}")
                 continue
+        
+        return False
+    
+    def _check_for_js_heavy(self, url: str) -> bool:
+        """
+        Check if a URL points to a JavaScript-heavy site.
+        
+        Args:
+            url: The URL to check
+            
+        Returns:
+            True if the site is JavaScript-heavy, False otherwise
+        """
+        try:
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=5) as response:
+                content = response.read().decode('utf-8', errors='ignore')
+                
+                # Check for common JavaScript frameworks and libraries
+                js_frameworks = [
+                    'react', 'angular', 'vue', 'next', 'nuxt', 'gatsby', 'svelte',
+                    'ember', 'backbone', 'knockout', 'meteor', 'mithril', 'preact',
+                    'stimulus', 'webcomponents', 'shadow-dom'
+                ]
+                
+                for framework in js_frameworks:
+                    if f'{framework}.js' in content or f'{framework}.min.js' in content:
+                        self.logger.info(f"Detected JavaScript framework: {framework}")
+                        return True
+                
+                # Check for SPA indicators
+                spa_indicators = [
+                    '<div id="root">', '<div id="app">', '<div id="__next">',
+                    'window.__INITIAL_STATE__', 'window.__PRELOADED_STATE__',
+                    'ReactDOM.render', 'createApp', 'createRoot',
+                    'data-reactroot', 'ng-app', 'v-app', 'ember-app'
+                ]
+                
+                for indicator in spa_indicators:
+                    if indicator in content:
+                        self.logger.info(f"Detected SPA indicator: {indicator}")
+                        return True
+                
+                # Check for high JavaScript usage
+                js_tags = content.count('<script')
+                if js_tags > 15:  # Arbitrary threshold for "many" script tags
+                    self.logger.info(f"Detected high JavaScript usage: {js_tags} script tags")
+                    return True
+                
+                # Check for dynamic content loading
+                dynamic_indicators = [
+                    'fetch(', 'axios.', 'ajax(', 'XMLHttpRequest',
+                    'IntersectionObserver', 'lazyload', 'infinite-scroll',
+                    'data-src=', 'data-lazy', 'loading="lazy"'
+                ]
+                
+                for indicator in dynamic_indicators:
+                    if indicator in content:
+                        self.logger.info(f"Detected dynamic content loading: {indicator}")
+                        return True
+        
+        except Exception as e:
+            self.logger.debug(f"Error checking for JavaScript-heavy site at {url}: {str(e)}")
         
         return False
     

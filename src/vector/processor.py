@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+import hashlib
 from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
 from langchain.embeddings import OpenAIEmbeddings, HuggingFaceEmbeddings
@@ -9,6 +10,8 @@ from langchain.schema import Document
 
 from src.database.session import SessionLocal
 from src.database.models import Article
+from src.utils.cache import vector_cache, cached
+from src.topics.processor import process_article_topics
 
 logger = logging.getLogger(__name__)
 
@@ -17,15 +20,28 @@ EMBEDDING_MODEL_TYPE = os.getenv("EMBEDDING_MODEL_TYPE", "huggingface")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 HUGGINGFACE_MODEL_NAME = os.getenv("HUGGINGFACE_MODEL_NAME", "sentence-transformers/all-mpnet-base-v2")
 
+# Cache for embedding models
+_embedding_model = None
+
 def get_embedding_model():
     """Get the embedding model based on configuration."""
+    global _embedding_model
+    
+    # Return cached model if available
+    if _embedding_model is not None:
+        return _embedding_model
+    
+    # Create new model
     if EMBEDDING_MODEL_TYPE.lower() == "openai":
         if not OPENAI_API_KEY:
             logger.warning("OpenAI API key not set, falling back to HuggingFace embeddings")
-            return HuggingFaceEmbeddings(model_name=HUGGINGFACE_MODEL_NAME)
-        return OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
+            _embedding_model = HuggingFaceEmbeddings(model_name=HUGGINGFACE_MODEL_NAME)
+        else:
+            _embedding_model = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
     else:
-        return HuggingFaceEmbeddings(model_name=HUGGINGFACE_MODEL_NAME)
+        _embedding_model = HuggingFaceEmbeddings(model_name=HUGGINGFACE_MODEL_NAME)
+    
+    return _embedding_model
 
 def create_text_chunks(text: str, metadata: Dict[str, Any]) -> List[Document]:
     """Split text into chunks for embedding."""
@@ -35,20 +51,38 @@ def create_text_chunks(text: str, metadata: Dict[str, Any]) -> List[Document]:
         length_function=len,
     )
     
-    chunks = text_splitter.create_documents(
-        texts=[text],
-        metadatas=[metadata]
-    )
-    
+    chunks = text_splitter.create_documents([text], [metadata])
     return chunks
 
+@cached(vector_cache)
 def generate_embedding(text: str) -> List[float]:
-    """Generate embedding for a text."""
-    embedding_model = get_embedding_model()
-    return embedding_model.embed_query(text)
+    """Generate embedding for text with caching."""
+    try:
+        # Get embedding model
+        model = get_embedding_model()
+        
+        # Generate embedding
+        embedding = model.embed_query(text)
+        
+        return embedding
+    
+    except Exception as e:
+        logger.error(f"Error generating embedding: {e}")
+        # Return empty embedding in case of error
+        return []
 
-def process_article(article_id: str, db: Session) -> bool:
-    """Process an article to generate and store its embedding."""
+def process_article(article_id: str, db: Session, process_topics: bool = True) -> bool:
+    """
+    Process an article to generate and store its embedding and optionally classify topics.
+    
+    Args:
+        article_id: ID of the article to process
+        db: Database session
+        process_topics: Whether to also process topics, entities, and relevance
+        
+    Returns:
+        True if processing was successful, False otherwise
+    """
     try:
         # Get article from database
         article = db.query(Article).filter(Article.id == article_id).first()
@@ -70,15 +104,32 @@ def process_article(article_id: str, db: Session) -> bool:
         db.commit()
         
         logger.info(f"Successfully generated embedding for article: {article.title}")
+        
+        # Process topics if requested
+        if process_topics:
+            logger.info(f"Processing topics for article: {article.title}")
+            if not process_article_topics(article_id, db):
+                logger.warning(f"Failed to process topics for article: {article.title}")
+                # Continue processing even if topic classification fails
+        
         return True
     
     except Exception as e:
-        logger.error(f"Error generating embedding for article {article_id}: {e}")
+        logger.error(f"Error processing article {article_id}: {e}")
         db.rollback()
         return False
 
-def process_unembedded_articles(batch_size: int = 10) -> int:
-    """Process articles that don't have embeddings yet."""
+def process_unembedded_articles(batch_size: int = 10, process_topics: bool = True) -> int:
+    """
+    Process articles that don't have embeddings yet.
+    
+    Args:
+        batch_size: Number of articles to process in one batch
+        process_topics: Whether to also process topics, entities, and relevance
+        
+    Returns:
+        Number of successfully processed articles
+    """
     db = SessionLocal()
     try:
         # Get articles without embeddings
@@ -86,7 +137,7 @@ def process_unembedded_articles(batch_size: int = 10) -> int:
         
         processed_count = 0
         for article in articles:
-            if process_article(article.id, db):
+            if process_article(article.id, db, process_topics=process_topics):
                 processed_count += 1
             
             # Sleep briefly to avoid overwhelming the embedding API
@@ -97,25 +148,36 @@ def process_unembedded_articles(batch_size: int = 10) -> int:
     finally:
         db.close()
 
+def get_cache_stats() -> Dict[str, Any]:
+    """Get statistics about the vector cache."""
+    return {
+        "size": len(vector_cache),
+        "hits": vector_cache.hits,
+        "misses": vector_cache.misses,
+    }
+
+def clear_cache() -> None:
+    """Clear the vector cache."""
+    vector_cache.clear()
+    logger.info("Vector cache cleared")
+
 def main():
-    """Main function to run the vector processor."""
-    logger.info("Starting vector processor")
+    """Main function for processing articles."""
+    logger.info("Starting vector processing")
     
-    while True:
-        try:
-            processed_count = process_unembedded_articles()
-            
-            if processed_count == 0:
-                # If no articles were processed, wait longer before checking again
-                logger.info("No articles to process, waiting...")
-                time.sleep(60)
-            else:
-                logger.info(f"Processed {processed_count} articles")
-                time.sleep(5)
-        
-        except Exception as e:
-            logger.error(f"Error in vector processor: {e}")
-            time.sleep(30)
+    # Process unembedded articles
+    processed_count = process_unembedded_articles(batch_size=10, process_topics=True)
+    logger.info(f"Processed {processed_count} articles")
+    
+    # Log cache statistics
+    logger.info(f"Cache stats: {get_cache_stats()}")
 
 if __name__ == "__main__":
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    
+    # Run main function
     main() 

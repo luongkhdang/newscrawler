@@ -11,6 +11,7 @@ from src.utils.url_classifier import URLClassifier
 from src.utils.exceptions import ConfigurationError
 from src.scrapers.newspaper_scraper import NewspaperScraper
 from src.scrapers.feed_scraper import FeedScraper
+from src.scrapers.puppeteer_scraper import PuppeteerScraper
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +37,7 @@ class ScraperFactory:
         if not self.scrapers:
             self.register_scraper("newspaper", NewspaperScraper())
             self.register_scraper("feed", FeedScraper())
+            self.register_scraper("puppeteer", PuppeteerScraper())
     
     def register_scraper(self, strategy_name: str, scraper: BaseScraper):
         """
@@ -93,6 +95,8 @@ class ScraperFactory:
             return NewspaperScraper()
         elif strategy == "feed":
             return FeedScraper()
+        elif strategy == "puppeteer":
+            return PuppeteerScraper()
         else:
             logger.error(f"No scraper available for strategy: {strategy}")
             return None 

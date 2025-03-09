@@ -1,0 +1,94 @@
+# NewsCrawler Project Rules for Cursor IDE
+
+# Python Environment
+python.venvPath = "venv"
+python.linting.enabled = true
+python.linting.pylintEnabled = true
+python.linting.flake8Enabled = true
+python.formatting.provider = "black"
+python.formatting.blackPath = "venv/bin/black"
+python.analysis.extraPaths = ["src"]
+
+# Editor Settings
+editor.formatOnSave = true
+editor.rulers = [88]  # Black's default line length
+editor.tabSize = 4
+editor.insertSpaces = true
+editor.detectIndentation = false
+
+# Search Paths
+search.exclude = {
+    "**/.git": true,
+    "**/venv": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/nltk_data": true,
+    "**/*.pyc": true,
+    "**/node_modules": true
+}
+
+# File Associations
+files.associations = {
+    "*.sql": "sql",
+    "*.md": "markdown",
+    "requirements.txt": "pip-requirements",
+    "Dockerfile*": "dockerfile",
+    "docker-compose.yml": "yaml"
+}
+
+# Project-Specific Rules
+# Focus on the specific topics defined in the project
+topics.focus = [
+    "Laws, regulations, global political shifts",
+    "Influential figures and decision-makers",
+    "Trade agreements and export-import dynamics",
+    "Investment trends and economic indicators",
+    "Currency interaction",
+    "Market indices (S&P 500, DJIA, QQQ)",
+    "Research papers and official statistics"
+]
+
+# Countries of interest for the project
+countries.focus = [
+    "USA", "Vietnam", "China", "Japan", 
+    "Mexico", "Germany", "Singapore", "Taiwan"
+]
+
+# API Integration settings
+apis.mediacloud.enabled = true
+apis.newsapi.enabled = true
+apis.newsfilter.enabled = true
+apis.alphavantage.enabled = true
+
+# Storage optimization rules
+storage.filterUnrelatedContent = true
+storage.deduplicationEnabled = true
+storage.retentionPolicyEnabled = true
+
+# Performance optimization settings
+performance.batchProcessingEnabled = true
+performance.vectorCachingEnabled = true
+performance.asyncProcessingEnabled = true
+
+# Database settings
+database.vectorIndexType = "HNSW"
+database.distanceMetric = "cosine"
+database.chunkSize = 500
+database.chunkOverlap = 100
+
+# LLM settings
+llm.primary = "GroqAI"
+llm.fallback = "LocalLLM"
+llm.embeddingModel = "BAAI/bge-small-en-v1.5"
+
+# Crawler settings
+crawler.imageExtractionDisabled = true
+crawler.rateLimitingEnabled = true
+crawler.incrementalCrawlingEnabled = true
+crawler.dailyScheduleEnabled = true
+
+# Content processing settings
+processing.nlpEnabled = true
+processing.keywordExtractionEnabled = true
+processing.entityExtractionEnabled = true
+processing.prioritizeMultiCountryMentions = true 

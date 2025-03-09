@@ -73,6 +73,8 @@ NewsCrawler is a comprehensive system designed to collect, process, store, and r
 - Rate limiting and politeness protocols to avoid overloading news sites
 - Error handling and retry mechanisms for failed requests
 - Configuration to explicitly disable image extraction in all scraper implementations
+- **Focused topic filtering**: Collection is focused on specific topics of interest (laws/regulations, influential figures, trade agreements, economic indicators, currency interactions, market indices) to optimize storage and processing resources
+- **API integration**: Leverages multiple specialized news APIs (MediaCloud, NewsAPI, NewsFilter, Alpha Vantage) to ensure comprehensive coverage of focused topics
 
 ### 2. Content Processing Module
 - Article extraction and cleaning
@@ -283,6 +285,67 @@ Enhances LLM capabilities with news data:
 - Connects to GroqAI for primary LLM capabilities
 - Implements local LLM fallback for reliability
 - Provides context-aware responses based on news data
+
+## Content Filtering and Topic Focus
+
+NewsCrawler implements a focused approach to data collection and storage, targeting specific topics of high value while filtering out unrelated information to optimize storage and database resources.
+
+### Focused Topics
+
+The system specifically targets news and information related to:
+
+1. **Laws, Regulations, and Global Political Shifts**: Focusing on developments involving USA, Vietnam, China, Japan, Mexico, Germany, Singapore, and Taiwan
+2. **Influential Figures and Decision-Makers**: Analysis and news about key figures in the US, Vietnam, and China
+3. **Trade Agreements and Export-Import Dynamics**: Between USA, Vietnam, China, Japan, Mexico, Germany, Singapore, and Taiwan
+4. **Investment Trends and Economic Indicators**: Global and regional economic data and analysis
+5. **Currency Interactions**: Tracking USD, USD-EURO, USD-VND, USD-YEN, USD-YUAN exchange rates and related news
+6. **Market Indices**: Monitoring S&P 500, DJIA, QQQ performance and related news
+7. **Research Papers and Official Statistics**: Aggregation of academic and governmental data sources
+
+### Data Source APIs
+
+The system integrates with multiple specialized APIs to ensure comprehensive coverage:
+
+1. **MediaCloud API**: Primary source for general news articles from yesterday to today
+   - Cross-platform news search with collection/source/feed directory browsing
+   - Implements story list search with focused topic keywords
+   - Filters by collections relevant to countries of interest
+
+2. **NewsAPI**: Direct news source with 24-hour delay
+   - Uses the Everything endpoint for comprehensive article search
+   - Implements powerful filtering by keywords, date, source, and language
+   - Applies Boolean operators for complex queries targeting focused topics
+
+3. **NewsFilter API**: Specialized stock market news source
+   - Utilizes Query API for historical stock market news
+   - Implements Stream API for real-time monitoring of market-moving news
+   - Filters by companies/tickers relevant to countries of interest
+
+4. **Alpha Vantage API**: Financial data and market news
+   - Leverages NEWS_SENTIMENT function with topic filtering
+   - Tracks specific companies influential in international trade
+   - Monitors currency pairs and market indices
+
+### Filtering Approach
+
+To optimize storage and processing resources, the system implements:
+
+1. **Content Relevance Filtering**:
+   - NLP-based topic classification to identify relevant articles
+   - Keyword and entity extraction to categorize content
+   - Prioritization of articles mentioning multiple countries/entities of interest
+
+2. **Storage Optimization**:
+   - Deduplication to avoid storing the same news from different sources
+   - Efficient indexing for quick retrieval by topic, country, or entity
+   - Data retention policies based on relevance and age
+
+3. **Daily Collection Pipeline**:
+   - Scheduled API calls running once daily
+   - Date parameters set to fetch only yesterday's news (avoiding duplicates)
+   - Error handling and retry mechanisms for API failures
+
+This focused approach ensures that the system collects and stores only the most relevant information, maximizing the value of the collected data while minimizing storage and processing requirements.
 
 ## Database Schema
 
